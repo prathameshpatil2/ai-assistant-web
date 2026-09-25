@@ -5,6 +5,7 @@ import MessageInput from '../components/chat/MessageInput'
 import TypingIndicator from '../components/common/TypingIndicator'
 import useChatStore from '../store/chatStore'
 import useAuthStore from '../store/authStore'
+import Orb from '../components/common/Orb'
 
 function ChatPage() {
   const { chats, messages, fetchChats, sendChatMessage, sending, provider, setProvider } =
@@ -51,9 +52,15 @@ function ChatPage() {
 
         <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-6 md:px-12 py-6 space-y-5">
           {messages.length === 0 && (
-            <p className="text-[var(--color-text-muted)] text-sm text-center mt-10">
-              Start a conversation
-            </p>
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Orb size={120} />
+              <h3 className="text-[var(--color-text)] font-medium mt-4">
+                How can I help you today?
+              </h3>
+              <p className="text-[var(--color-text-muted)] text-sm mt-1">
+                Ask me anything — I can write, explain, debug, or brainstorm with you.
+              </p>
+            </div>
           )}
           {messages.map((msg, i) => (
             <MessageBubble key={i} role={msg.role} text={msg.parts?.[0]?.text} />
