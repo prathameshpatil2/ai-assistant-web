@@ -92,18 +92,29 @@ input:-webkit-autofill:focus {
 }
 
 .markdown-content code {
-  background: var(--color-surface);
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--color-accent-glow);
   padding: 0.15em 0.4em;
   border-radius: 4px;
   font-size: 0.85em;
+  font-family: 'Consolas', 'Monaco', monospace;
 }
 
 .markdown-content pre {
-  background: var(--color-surface);
-  padding: 0.75em;
-  border-radius: 8px;
+  background: #0d0d10;
+  border: 1px solid var(--color-border);
+  padding: 1em;
+  border-radius: 10px;
   overflow-x: auto;
-  margin: 0.5em 0;
+  margin: 0.6em 0;
+}
+
+.markdown-content pre code {
+  background: none;
+  color: var(--color-text);
+  padding: 0;
+  font-size: 0.9em;
+  line-height: 1.6;
 }
 
 .markdown-content > *:first-child { margin-top: 0; }
