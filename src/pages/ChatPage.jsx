@@ -49,7 +49,7 @@ function ChatPage() {
           </select>
         </div>
 
-        <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-6 md:px-12 py-6 space-y-5">
           {messages.length === 0 && (
             <p className="text-[var(--color-text-muted)] text-sm text-center mt-10">
               Start a conversation

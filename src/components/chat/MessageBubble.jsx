@@ -11,10 +11,10 @@ function MessageBubble({ role, text }) {
       className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
     >
       <div
-        className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+        className={`max-w-[min(75%,640px)] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
           isUser
-            ? 'bg-[var(--color-accent)] text-white'
-            : 'bg-[var(--color-surface-raised)] text-[var(--color-text)] border border-[var(--color-border)]'
+            ? 'bg-[var(--color-accent)] text-white rounded-br-md'
+            : 'bg-[var(--color-surface-raised)] text-[var(--color-text)] border border-[var(--color-border)] rounded-bl-md'
         }`}
       >
         {isUser ? (
