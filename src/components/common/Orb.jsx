@@ -33,16 +33,17 @@ function Orb({ size = 200 }) {
           height: size * 0.55,
           background:
             'conic-gradient(from 0deg, var(--color-accent), var(--color-accent-glow), transparent, var(--color-accent))',
-          filter: `blur(${size * 0.08}px)`,
+          filter: `blur(${size * 0.1}px)`,
         }}
       />
       <div
         className="absolute rounded-full"
         style={{
-          width: size * 0.4,
-          height: size * 0.4,
+          width: size * 0.32,
+          height: size * 0.32,
           background: 'var(--color-bg)',
-          filter: `blur(${size * 0.03}px)`,
+          filter: `blur(${size * 0.12}px)`,
+          opacity: 0.85,
         }}
       />
     </div>
