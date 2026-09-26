@@ -99,7 +99,8 @@ function Sidebar() {
                     <div
                       ref={menuRef}
                       onClick={(e) => e.stopPropagation()}
-                      className="glass absolute right-0 top-full mt-1 w-36 rounded-lg overflow-hidden z-20 shadow-xl"
+                      className="absolute right-0 top-full mt-1 w-36 rounded-lg overflow-hidden z-20 shadow-2xl border border-[var(--color-border)]"
+                      style={{ background: 'var(--color-surface-raised)' }}
                     >
                       <button
                         onClick={() => startEditing(chat)}
