@@ -69,12 +69,13 @@ const useChatStore = create((set, get) => ({
     }
   },
 
-  renameActiveChat: async (title) => {
-    const { activeChatId, chats } = get()
-    if (!activeChatId) return
-    await renameChat(activeChatId, title)
-    set({
-      chats: chats.map((c) => (c.chatId === activeChatId ? { ...c, title } : c)),
+  renameChatById: async (chatId, title) => {
+  const { chats } = get()
+  await renameChat(chatId, title)
+  set({
+      chats: chats.map((c) =>
+        (c.chatId || c._id) === chatId ? { ...c, title } : c
+      ),
     })
   },
 
