@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { sendMessageStream } from '../api/chats'
 import {
   createChat,
   getChats,
@@ -63,6 +64,45 @@ const useChatStore = create((set, get) => ({
       const aiMsg = { role: 'model', parts: [{ text: data.reply }] }
       set((state) => ({ messages: [...state.messages, aiMsg], sending: false }))
       get().fetchChats()
+    } catch (err) {
+      console.error(err)
+      set({ sending: false })
+    }
+  },
+
+
+  sendChatMessageStream: async (text) => {
+    const { activeChatId, provider, messages } = get()
+    if (!activeChatId) return
+
+    const userMsg = { role: 'user', parts: [{ text }] }
+    const aiMsgIndex = messages.length + 1
+
+    set({
+      messages: [...messages, userMsg, { role: 'model', parts: [{ text: '' }] }],
+      sending: true,
+    })
+
+    try {
+      await sendMessageStream(
+        activeChatId,
+        text,
+        provider,
+        (token) => {
+          set((state) => {
+            const updated = [...state.messages]
+            updated[aiMsgIndex] = {
+              role: 'model',
+              parts: [{ text: updated[aiMsgIndex].parts[0].text + token }],
+            }
+            return { messages: updated }
+          })
+        },
+        () => {
+          set({ sending: false })
+          get().fetchChats()
+        }
+      )
     } catch (err) {
       console.error(err)
       set({ sending: false })

@@ -8,7 +8,7 @@ import useAuthStore from '../store/authStore'
 import Orb from '../components/common/Orb'
 
 function ChatPage() {
-  const { chats, messages, fetchChats, sendChatMessage, sending, provider, setProvider } =
+  const { chats, messages, fetchChats, sendChatMessageStream, sending, provider, setProvider } =
     useChatStore()
   const { isAuthenticated } = useAuthStore()
   const messagesContainerRef = useRef(null)
@@ -65,10 +65,9 @@ function ChatPage() {
           {messages.map((msg, i) => (
             <MessageBubble key={i} role={msg.role} text={msg.parts?.[0]?.text} />
           ))}
-          {sending && <TypingIndicator />}
         </div>
 
-        <MessageInput onSend={sendChatMessage} sending={sending} />
+        <MessageInput onSend={sendChatMessageStream} sending={sending} />
       </div>
     </div>
   )

@@ -62,3 +62,39 @@ export async function deleteChat(chatId) {
   if (!res.ok) throw new Error('Failed to delete chat')
   return res.json()
 }
+
+export async function sendMessageStream(chatId, message, provider, onToken, onDone) {
+  const token = useAuthStore.getState().token
+  const response = await fetch(`${API_URL}/chats/${chatId}/message/stream`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ message, provider }),
+  })
+
+  if (!response.ok || !response.body) throw new Error('Failed to stream message')
+
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+
+    buffer += decoder.decode(value, { stream: true })
+    const lines = buffer.split('\n\n')
+    buffer = lines.pop()
+
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue
+      const data = JSON.parse(line.slice(6))
+
+      if (data.token) onToken(data.token)
+      if (data.done) onDone(data.title)
+      if (data.error) throw new Error(data.error)
+    }
+  }
+}
