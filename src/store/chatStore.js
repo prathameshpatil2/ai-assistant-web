@@ -80,13 +80,14 @@ const useChatStore = create((set, get) => ({
   },
 
   removeChat: async (chatId) => {
-    await deleteChat(chatId)
-    set((state) => ({
-      chats: state.chats.filter((c) => c.chatId !== chatId),
+  await deleteChat(chatId)
+  set((state) => ({
+      chats: state.chats.filter((c) => (c.chatId || c._id) !== chatId),
       activeChatId: state.activeChatId === chatId ? null : state.activeChatId,
       messages: state.activeChatId === chatId ? [] : state.messages,
     }))
   },
+  
 }))
 
 export default useChatStore

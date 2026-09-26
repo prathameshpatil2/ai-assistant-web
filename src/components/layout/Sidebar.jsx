@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import useChatStore from '../../store/chatStore'
 import useAuthStore from '../../store/authStore'
 
@@ -8,11 +8,23 @@ function Sidebar() {
   const { user, logout } = useAuthStore()
   const [editingId, setEditingId] = useState(null)
   const [editValue, setEditValue] = useState('')
+  const [menuOpenId, setMenuOpenId] = useState(null)
+  const menuRef = useRef(null)
 
-  const startEditing = (e, chat) => {
-    e.stopPropagation()
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpenId(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const startEditing = (chat) => {
     setEditingId(chat.chatId || chat._id)
     setEditValue(chat.title || 'New chat')
+    setMenuOpenId(null)
   }
 
   const saveEdit = async (chatId) => {
@@ -45,11 +57,12 @@ function Sidebar() {
         {chats.map((chat) => {
           const chatId = chat.chatId || chat._id
           const isEditing = editingId === chatId
+          const isMenuOpen = menuOpenId === chatId
 
           return (
             <div
               key={chatId}
-              className={`group flex items-center justify-between rounded-lg px-3 py-2 text-sm cursor-pointer transition-colors ${
+              className={`relative flex items-center justify-between rounded-lg px-3 py-2 text-sm cursor-pointer transition-colors ${
                 activeChatId === chatId
                   ? 'bg-[var(--color-surface-raised)] text-[var(--color-text)]'
                   : 'text-[var(--color-text-muted)] hover:bg-[var(--color-surface-raised)]'
@@ -71,26 +84,40 @@ function Sidebar() {
                 />
               ) : (
                 <>
-                  <span className="truncate">{chat.title || 'New chat'}</span>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2 shrink-0">
-                    <button
-                      onClick={(e) => startEditing(e, chat)}
-                      className="text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-                      title="Rename"
+                  <span className="truncate flex-1">{chat.title || 'New chat'}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setMenuOpenId(isMenuOpen ? null : chatId)
+                    }}
+                    className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] px-1.5"
+                  >
+                    ⋮
+                  </button>
+
+                  {isMenuOpen && (
+                    <div
+                      ref={menuRef}
+                      onClick={(e) => e.stopPropagation()}
+                      className="glass absolute right-0 top-full mt-1 w-36 rounded-lg overflow-hidden z-20 shadow-xl"
                     >
-                      ✎
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        removeChat(chatId)
-                      }}
-                      className="text-[var(--color-text-muted)] hover:text-red-400"
-                      title="Delete"
-                    >
-                      ✕
-                    </button>
-                  </div>
+                      <button
+                        onClick={() => startEditing(chat)}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--color-text)] hover:bg-[var(--color-surface-raised)] transition-colors"
+                      >
+                        ✎ Rename
+                      </button>
+                      <button
+                        onClick={() => {
+                          removeChat(chatId)
+                          setMenuOpenId(null)
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-[var(--color-surface-raised)] transition-colors"
+                      >
+                        🗑 Delete
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
             </div>
