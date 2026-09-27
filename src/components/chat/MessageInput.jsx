@@ -13,7 +13,9 @@ function MessageInput({ onSend, sending }) {
   const [text, setText] = useState('')
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
+  const [listening, setListening] = useState(false)
   const fileInputRef = useRef(null)
+  const recognitionRef = useRef(null)
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0]
@@ -26,6 +28,37 @@ function MessageInput({ onSend, sending }) {
     setImageFile(null)
     setImagePreview(null)
     if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const toggleVoiceInput = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+
+    if (!SpeechRecognition) {
+      alert('Voice input is not supported in this browser. Try Chrome or Edge.')
+      return
+    }
+
+    if (listening) {
+      recognitionRef.current?.stop()
+      return
+    }
+
+    const recognition = new SpeechRecognition()
+    recognition.lang = 'en-US'
+    recognition.interimResults = false
+    recognition.maxAlternatives = 1
+
+    recognition.onstart = () => setListening(true)
+    recognition.onend = () => setListening(false)
+    recognition.onerror = () => setListening(false)
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript
+      setText((prev) => (prev ? `${prev} ${transcript}` : transcript))
+    }
+
+    recognitionRef.current = recognition
+    recognition.start()
   }
 
   const handleSubmit = async (e) => {
@@ -76,10 +109,24 @@ function MessageInput({ onSend, sending }) {
         >
           📎
         </button>
+
+        <button
+          type="button"
+          onClick={toggleVoiceInput}
+          className={`border rounded-lg px-3 transition-colors ${
+            listening
+              ? 'bg-red-500/20 border-red-400 text-red-400 animate-pulse'
+              : 'bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
+          }`}
+          title={listening ? 'Stop listening' : 'Voice input'}
+        >
+          🎤
+        </button>
+
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Message your AI assistant..."
+          placeholder={listening ? 'Listening...' : 'Message your AI assistant...'}
           className="flex-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg px-4 py-2.5 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-accent)] transition-colors"
         />
         <button
