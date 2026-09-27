@@ -71,11 +71,13 @@ const useChatStore = create((set, get) => ({
   },
 
 
-  sendChatMessageStream: async (text) => {
+  sendChatMessageStream: async (text, image) => {
     const { activeChatId, provider, messages } = get()
     if (!activeChatId) return
 
-    const userMsg = { role: 'user', parts: [{ text }] }
+    const userParts = [{ text }]
+    if (image) userParts.push({ inlineData: { mimeType: image.mimeType, data: image.data } })
+    const userMsg = { role: 'user', parts: userParts }
     const aiMsgIndex = messages.length + 1
 
     set({
@@ -88,6 +90,7 @@ const useChatStore = create((set, get) => ({
         activeChatId,
         text,
         provider,
+        image,
         (token) => {
           set((state) => {
             const updated = [...state.messages]

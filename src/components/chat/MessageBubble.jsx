@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 
-function MessageBubble({ role, text }) {
+function MessageBubble({ role, text, image }) {
   const isUser = role === 'user'
   return (
     <motion.div
@@ -17,6 +17,7 @@ function MessageBubble({ role, text }) {
             : 'bg-[var(--color-surface-raised)] text-[var(--color-text)] border border-[var(--color-border)] rounded-bl-md'
         }`}
       >
+        {image && <img src={image} alt="Attached" className="rounded-lg mb-2 max-h-64" />}
         {isUser ? (
           text
         ) : (

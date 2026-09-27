@@ -2,10 +2,9 @@ import { useEffect, useRef } from 'react'
 import Sidebar from '../components/layout/Sidebar'
 import MessageBubble from '../components/chat/MessageBubble'
 import MessageInput from '../components/chat/MessageInput'
-import TypingIndicator from '../components/common/TypingIndicator'
+import Orb from '../components/common/Orb'
 import useChatStore from '../store/chatStore'
 import useAuthStore from '../store/authStore'
-import Orb from '../components/common/Orb'
 
 function ChatPage() {
   const { chats, messages, fetchChats, sendChatMessageStream, sending, provider, setProvider } =
@@ -62,9 +61,21 @@ function ChatPage() {
               </p>
             </div>
           )}
-          {messages.map((msg, i) => (
-            <MessageBubble key={i} role={msg.role} text={msg.parts?.[0]?.text} />
-          ))}
+          {messages.map((msg, i) => {
+            const imagePart = msg.parts?.find((p) => p.inlineData)
+            return (
+              <MessageBubble
+                key={i}
+                role={msg.role}
+                text={msg.parts?.find((p) => p.text)?.text}
+                image={
+                  imagePart
+                    ? `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`
+                    : null
+                }
+              />
+            )
+          })}
         </div>
 
         <MessageInput onSend={sendChatMessageStream} sending={sending} />

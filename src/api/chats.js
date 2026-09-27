@@ -63,7 +63,7 @@ export async function deleteChat(chatId) {
   return res.json()
 }
 
-export async function sendMessageStream(chatId, message, provider, onToken, onDone) {
+export async function sendMessageStream(chatId, message, provider, image, onToken, onDone) {
   const token = useAuthStore.getState().token
   const response = await fetch(`${API_URL}/chats/${chatId}/message/stream`, {
     method: 'POST',
@@ -71,7 +71,7 @@ export async function sendMessageStream(chatId, message, provider, onToken, onDo
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ message, provider }),
+    body: JSON.stringify({ message, provider, image }),
   })
 
   if (!response.ok || !response.body) throw new Error('Failed to stream message')
