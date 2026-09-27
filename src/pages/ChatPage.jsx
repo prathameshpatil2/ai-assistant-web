@@ -46,6 +46,7 @@ function ChatPage() {
           >
             <option value="gemini">Gemini</option>
             <option value="groq">Groq</option>
+            <option value="mistral">Mistral</option>
           </select>
         </div>
 
